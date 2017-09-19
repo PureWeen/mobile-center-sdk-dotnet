@@ -230,5 +230,5 @@ $cakeArguments += $ScriptArgs
 
 # Start Cake
 Write-Host "Running build script..."
-&$CAKE_EXE $cakeArguments --settings_skipverification=true
+&$CAKE_EXE  --settings_skipverification=true $cakeArguments
 exit $LASTEXITCODE
