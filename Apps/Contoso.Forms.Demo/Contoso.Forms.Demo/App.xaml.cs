@@ -8,6 +8,9 @@ using Microsoft.Azure.Mobile.Crashes;
 using Microsoft.Azure.Mobile.Distribute;
 using Microsoft.Azure.Mobile.Push;
 using Xamarin.Forms;
+using Akavache;
+using System;
+using System.Reactive.Linq;
 
 namespace Contoso.Forms.Demo
 {
@@ -31,11 +34,16 @@ namespace Contoso.Forms.Demo
         {
             InitializeComponent();
             MainPage = new NavigationPage(new MainDemoPage());
+
+            BlobCache.ApplicationName = "HDAkavache";   // Init Akavache
+            BlobCache.LocalMachine.InsertObject<object>("test", new object())
+                .Subscribe();
+            
         }
 
         protected override void OnStart()
         {
-            MobileCenter.LogLevel = LogLevel.Verbose;
+            MobileCenter.LogLevel = LogLevel.Error;
             Crashes.ShouldProcessErrorReport = ShouldProcess;
             Crashes.ShouldAwaitUserConfirmation = ConfirmationHandler;
             Crashes.GetErrorAttachments = GetErrorAttachments;
@@ -55,6 +63,11 @@ namespace Contoso.Forms.Demo
             {
                 MobileCenterLog.Info(LogTag, "Crashes.LastSessionCrashReport.Exception=" + report.Result?.Exception);
             });
+
+
+            BlobCache.LocalMachine.InsertObject<object>("test", new object())
+                .SelectMany(_=> BlobCache.LocalMachine.GetObject<object>("test"))
+                .Subscribe();
         }
 
         protected override void OnSleep()
